@@ -31,6 +31,7 @@ func main() {
 	}
 
 	go func() {
+		log.Info("Start listening on ", server.Addr)
 		server.ListenAndServe()
 	}()
 

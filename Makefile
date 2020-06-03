@@ -37,11 +37,19 @@ deps: .get
 
 test:
 	@echo "--> Running go test" ;
-	@go test -v --cover $(PACKAGES)
+	go test -v --cover $(PACKAGES)
 
 build: deps test
 	@echo "--> Build binary $(APP_NAME) ..."
 	GOOS=linux go build -o ./build/bin/$(APP_NAME)-apiserver ./cmd/apiserver/main.go
+
+jfrog: test
+	@echo "--> Build artifacts $(APP_NAME) ..."
+	jfrog rt go build -o ./build/bin/$(APP_NAME)-apiserver ./cmd/apiserver/main.go --build-name=$(BUILD_NAME) --build-number=$(BUILD_NUMBER)
+
+jfrog-publish:
+	@echo "--> Publish build to artifactory ..."
+	jfrog rt bp $(BUILD_NAME) $(BUILD_NUMBER)
 
 image: build
 	@echo "--> Build image $(IMAGE_ORG)/$(APP_NAME):$(APP_TAG) ..."
